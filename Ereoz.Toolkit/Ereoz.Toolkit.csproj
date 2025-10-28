@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net5.0-windows;net40</TargetFrameworks>
@@ -31,6 +31,7 @@
 		<PackageReference Include="Ereoz.WindowManagement"	Version="0.*" PrivateAssets="none" />
 		<PackageReference Include="Ereoz.UI"				Version="0.*" PrivateAssets="none" />
 		<PackageReference Include="Ereoz.MVVM"				Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.Messaging"			Version="0.*" PrivateAssets="none" />
 	</ItemGroup>
 	
 </Project>
