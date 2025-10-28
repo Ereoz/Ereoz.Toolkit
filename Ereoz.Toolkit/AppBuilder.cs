@@ -11,6 +11,7 @@ namespace Ereoz.Toolkit
     public class AppBuilder
     {
         private NavigationManager _navigationManager;
+        private bool _isAutoRegisterContracts;
         private bool _isAutoRegisterViewWithViewModels;
 
         public AppBuilder()
@@ -18,6 +19,7 @@ namespace Ereoz.Toolkit
             ServiceContainer = new ServiceContainer();
             _navigationManager = new NavigationManager(ServiceContainer);
 
+            _isAutoRegisterContracts = true;
             _isAutoRegisterViewWithViewModels = true;
         }
 
@@ -26,6 +28,7 @@ namespace Ereoz.Toolkit
         public AppBuilder ConfigureDI(Action<IServiceContainer> configure)
         {
             configure(ServiceContainer);
+            _isAutoRegisterContracts = false;
             return this;
         }
 
@@ -38,8 +41,11 @@ namespace Ereoz.Toolkit
 
         public T CreateMainWindow<T>(WindowLocation appSettings = null) where T : Window
         {
+            if(_isAutoRegisterContracts)
+                ((ServiceContainer)ServiceContainer).AutoRegisterAllContracts();
+
             if (_isAutoRegisterViewWithViewModels)
-                _navigationManager.AutoRegisterAllViewsWithViewModels(Assembly.GetEntryAssembly());
+                _navigationManager.AutoRegisterAllViewsWithViewModels();
 
             return _navigationManager.CreateMainWindow<T>(appSettings);
         }
