@@ -1,13 +1,14 @@
 ﻿using Ereoz.Abstractions.DI;
+using Ereoz.Abstractions.Messaging;
+using Ereoz.Abstractions.MVVM;
 using Ereoz.DI;
+using Ereoz.Messaging;
 using Ereoz.MVVM;
 using Ereoz.WindowManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Documents;
 
 namespace Ereoz.Toolkit
 {
@@ -21,6 +22,10 @@ namespace Ereoz.Toolkit
         {
             ServiceContainer = new ServiceContainer();
             _navigationManager = new NavigationManager(ServiceContainer);
+
+            ServiceContainer.Register<IServiceContainer, ServiceContainer>().AsSingletone(ServiceContainer);
+            ServiceContainer.Register<INavigationManager, NavigationManager>().AsSingletone(_navigationManager);
+            ServiceContainer.Register<IMessenger,Messenger>().AsSingletone(new Messenger());
 
             _isAutoRegisterContracts = true;
             _isAutoRegisterViewWithViewModels = true;
@@ -64,11 +69,12 @@ namespace Ereoz.Toolkit
                                 && !type.FullName.StartsWith("MatchState")
                                 && !type.FullName.StartsWith("EmptyArray")
                                 && !type.FullName.StartsWith("<")
-                                && !type.FullName.StartsWith("_"))
+                                && !type.FullName.StartsWith("_")
+                                && !type.FullName.StartsWith("Ereoz.Messaging"))
                     .ToList();
             }
 
-            if(_isAutoRegisterContracts)
+            if (_isAutoRegisterContracts)
                 ((ServiceContainer)ServiceContainer).AutoRegisterAllContracts(allTypes);
 
             if (_isAutoRegisterViewWithViewModels)
