@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net5.0-windows;net40</TargetFrameworks>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageId>Ereoz.Toolkit</PackageId>
+		<Title>Toolkit</Title>
+		<Authors>Ereoz</Authors>
+		<Description>WPF MVVM Toolkit</Description>
+		<Copyright>Denis Plotnikov</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Ereoz/Ereoz.Toolkit</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Ereoz/Ereoz.Toolkit</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<UseWPF>true</UseWPF>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="." />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Ereoz.Abstractions" Version="0.*" />
+		<PackageReference Include="Ereoz.DataStorage" Version="0.*" />
+		<PackageReference Include="Ereoz.Serialization" Version="0.*" />
+		<PackageReference Include="Ereoz.DI" Version="0.*" />
+		<PackageReference Include="Ereoz.Logging" Version="0.*" />
+		<PackageReference Include="Ereoz.Packing" Version="0.*" />
+		<PackageReference Include="Ereoz.WindowManagement" Version="0.*" />
+		<PackageReference Include="Ereoz.UI" Version="0.*" />
+		<PackageReference Include="Ereoz.MVVM" Version="0.*" />
+	</ItemGroup>
+	
+</Project>

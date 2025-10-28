@@ -1,0 +1,48 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: windows-2022
+     
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: RepoInfo
+      id: repo_info
+      run: |
+       echo "Repo name is ${{ github.event.repository.name }}"
+       echo "Полный ref: ${{ github.ref }}"
+       echo "Имя тега: ${{ github.ref_name }}"
+       $tagName = "${{ github.ref_name }}"
+       $versionNumber = $tagName.TrimStart('v')
+       $envFile = "$env:GITHUB_OUTPUT"
+       "version=$versionNumber" | Out-File -Append $envFile
+       Write-Host "Извлеченная версия: $versionNumber"
+       
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release /p:Version=${{ steps.repo_info.outputs.version }} --no-restore 
+    
+    - name: Test
+      run: dotnet test --configuration Release --no-restore --no-build --verbosity normal
+    
+    - name: pack nuget packages
+      run: dotnet pack --output packages /p:Version=${{ steps.repo_info.outputs.version }} --no-restore --no-build
+    
+    - name: upload nuget package
+      env:
+        PACKAGE_NAME: ${{ github.event.repository.name }}.${{ steps.repo_info.outputs.version }}.nupkg
+      run: dotnet nuget push packages/${{ env.PACKAGE_NAME }} -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      #run: dotnet nuget push packages/${{ env.PACKAGE_NAME }} -k ${{ secrets.GH_NUGET_API_KEY }} -s https://nuget.pkg.github.com/Ereoz/index.json
