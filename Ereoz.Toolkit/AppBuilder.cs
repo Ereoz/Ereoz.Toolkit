@@ -51,7 +51,7 @@ namespace Ereoz.Toolkit
         {
             List<Type> allTypes = null;
 
-            if (_isAutoRegisterContracts || _isAutoRegisterContracts)
+            if (_isAutoRegisterContracts || _isAutoRegisterViewWithViewModels)
             {
                 allTypes = AppDomain.CurrentDomain
                     .GetAssemblies()
