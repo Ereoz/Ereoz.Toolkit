@@ -7,7 +7,9 @@ using Ereoz.MVVM;
 using Ereoz.WindowManagement;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 
 namespace Ereoz.Toolkit
@@ -18,8 +20,22 @@ namespace Ereoz.Toolkit
         private bool _isAutoRegisterContracts;
         private bool _isAutoRegisterViewWithViewModels;
 
-        public AppBuilder()
+        internal static string FileName { get; private set; }
+        internal static string ProductName { get; private set; }
+        internal static Version Version { get; private set; }
+        internal static string DataFolder { get; private set; }
+
+        public AppBuilder(string dataFolder = null)
         {
+            DataFolder = dataFolder;
+            if (!string.IsNullOrWhiteSpace(DataFolder) && !Directory.Exists(DataFolder))
+                Directory.CreateDirectory(DataFolder);
+
+            var callingAssembly = Assembly.GetCallingAssembly();
+            Version = callingAssembly.GetName().Version;
+            FileName = Path.GetFileNameWithoutExtension(callingAssembly.Location);
+            ProductName = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(callingAssembly, typeof(AssemblyProductAttribute), false)).Product;
+
             ServiceContainer = new ServiceContainer();
             _navigationManager = new NavigationManager(ServiceContainer);
 
@@ -47,7 +63,7 @@ namespace Ereoz.Toolkit
             return this;
         }
 
-        public T CreateMainWindow<T>(WindowLocation appSettings = null) where T : Window
+        public T CreateMainWindow<T>(SettingsBase appSettings = null) where T : Window
         {
             List<Type> allTypes = null;
 
@@ -80,7 +96,10 @@ namespace Ereoz.Toolkit
             if (_isAutoRegisterViewWithViewModels)
                 _navigationManager.AutoRegisterAllViewsWithViewModels(allTypes);
 
-            return _navigationManager.CreateMainWindow<T>(appSettings);
+            var window = _navigationManager.CreateMainWindow<T>(appSettings, DataFolder);
+            window.Title = $"{ProductName} - {Version.Major}.{Version.Minor}.{Version.Revision}";
+
+            return window;
         }
     }
 }
