@@ -19,6 +19,7 @@ namespace Ereoz.Toolkit
         private NavigationManager _navigationManager;
         private bool _isAutoRegisterContracts;
         private bool _isAutoRegisterViewWithViewModels;
+        private Window _startWindow;
 
         internal static string FileName { get; private set; }
         internal static string ProductName { get; private set; }
@@ -63,6 +64,17 @@ namespace Ereoz.Toolkit
             return this;
         }
 
+        public void ShowStartWindow<TWindow, TViewModel>()
+            where TWindow : Window
+            where TViewModel : ViewModelBase
+        {
+            _startWindow = ServiceContainer.Resolve<TWindow>();
+            _startWindow.DataContext = ServiceContainer.Resolve<TViewModel>();
+            _startWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            _startWindow.Topmost = true;
+            _startWindow.Show();
+        }
+
         public T CreateMainWindow<T>(SettingsBase appSettings = null) where T : Window
         {
             List<Type> allTypes = null;
@@ -99,6 +111,16 @@ namespace Ereoz.Toolkit
             var window = _navigationManager.CreateMainWindow<T>(appSettings, DataFolder);
             window.Title = $"{ProductName} - {Version.Major}.{Version.Minor}.{Version.Revision}";
 
+            if (_startWindow != null)
+            {
+                window.ContentRendered += (s, e) =>
+                {
+                    _startWindow.Close();
+                    _startWindow = null;
+                    Application.Current.MainWindow = window;
+                };
+            }
+            
             return window;
         }
     }
