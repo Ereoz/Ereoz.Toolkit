@@ -1,7 +1,9 @@
 ﻿using Ereoz.Abstractions.DI;
+using Ereoz.Abstractions.Logging;
 using Ereoz.Abstractions.Messaging;
 using Ereoz.Abstractions.MVVM;
 using Ereoz.DI;
+using Ereoz.Logging;
 using Ereoz.Messaging;
 using Ereoz.MVVM;
 using Ereoz.WindowManagement;
@@ -26,10 +28,17 @@ namespace Ereoz.Toolkit
         internal static Version Version { get; private set; }
         internal static string DataFolder { get; private set; }
 
-        public AppBuilder(string dataFolder = null)
+        public AppBuilder(string updateFolder, string dataFolder)
         {
             DataFolder = dataFolder;
-            if (!string.IsNullOrWhiteSpace(DataFolder) && !Directory.Exists(DataFolder))
+
+            if (string.IsNullOrWhiteSpace(updateFolder))
+                throw new ArgumentException("updateFolder must not be null");
+
+            if (string.IsNullOrWhiteSpace(DataFolder))
+                throw new ArgumentException("DataFolder must not be null");
+
+            if (!Directory.Exists(DataFolder))
                 Directory.CreateDirectory(DataFolder);
 
             var callingAssembly = Assembly.GetCallingAssembly();
@@ -43,6 +52,9 @@ namespace Ereoz.Toolkit
             ServiceContainer.Register<IServiceContainer, ServiceContainer>().AsSingletone(ServiceContainer);
             ServiceContainer.Register<INavigationManager, NavigationManager>().AsSingletone(_navigationManager);
             ServiceContainer.Register<IMessenger,Messenger>().AsSingletone(new Messenger());
+            ServiceContainer.Register<ILogger, Logger>();
+
+            ServiceContainer.Resolve<Updater>().CheckAndUpdate(updateFolder, dataFolder, callingAssembly);
 
             _isAutoRegisterContracts = true;
             _isAutoRegisterViewWithViewModels = true;
