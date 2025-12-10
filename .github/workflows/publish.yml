@@ -31,9 +31,6 @@ jobs:
     
     - name: Restore dependencies
       run: dotnet restore
-      
-    - name: BuildInstallerCreator
-      run: dotnet build Ereoz.InstallerCreator\Ereoz.InstallerCreator.csproj --configuration Release
     
     - name: Build
       run: dotnet build --configuration Release /p:Version=${{ steps.repo_info.outputs.version }} --no-restore 

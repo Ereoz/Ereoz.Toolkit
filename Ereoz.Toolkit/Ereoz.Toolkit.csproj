@@ -35,18 +35,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Resources\*.exe">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		<EmbeddedResource Include="Resources\Ereoz.InstallerCreator.exe">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Resources\" />
-	</ItemGroup>
-
-	<Target Name="CopyInstallerCreatorToResources" BeforeTargets="BeforeBuild">
-		<Message Text="Copy InstallerCreator.exe to Resources..." Importance="high" />
-		<Copy SourceFiles="..\Ereoz.InstallerCreator\bin\Release\net46\Ereoz.InstallerCreator.exe" DestinationFiles="Resources\Ereoz.InstallerCreator.exe" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
-	</Target>
 
 </Project>
