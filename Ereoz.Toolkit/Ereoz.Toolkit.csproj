@@ -44,7 +44,14 @@
 	  <Folder Include="Resources\" />
 	</ItemGroup>
 
-	<Target Name="CopyInstallerCreatorToResources" BeforeTargets="BeforeBuild" Condition="'$(TargetFramework)' == 'net40'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0-windows'">
+		<ProjectReference Include="..\Ereoz.InstallerCreator\Ereoz.InstallerCreator.csproj">
+			<Private>False</Private>
+			<CopyLocal>False</CopyLocal>
+		</ProjectReference>
+	</ItemGroup>
+
+	<Target Name="CopyInstallerCreatorToResources" BeforeTargets="BeforeBuild" Condition="'$(TargetFramework)' == 'net5.0-windows'">
 		<Message Text="Copy InstallerCreator.exe to Resources..." Importance="high" />
 		<Copy SourceFiles="..\Ereoz.InstallerCreator\bin\Release\net46\Ereoz.InstallerCreator.exe" DestinationFiles="Resources\Ereoz.InstallerCreator.exe" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
 	</Target>
