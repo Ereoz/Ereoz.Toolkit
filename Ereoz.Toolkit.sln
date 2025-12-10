@@ -5,6 +5,10 @@ VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ereoz.Toolkit", "Ereoz.Toolkit\Ereoz.Toolkit.csproj", "{FBFCB8E5-41BD-4F0E-86A8-420F3F62FB16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ereoz.InstallerBase", "Ereoz.InstallerBase\Ereoz.InstallerBase.csproj", "{8C7036F0-F7CC-10FE-4C17-818B6F4F7118}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ereoz.InstallerCreator", "Ereoz.InstallerCreator\Ereoz.InstallerCreator.csproj", "{7C3693ED-E82F-3BBD-6E5B-06C01270313A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{FBFCB8E5-41BD-4F0E-86A8-420F3F62FB16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBFCB8E5-41BD-4F0E-86A8-420F3F62FB16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBFCB8E5-41BD-4F0E-86A8-420F3F62FB16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C7036F0-F7CC-10FE-4C17-818B6F4F7118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C7036F0-F7CC-10FE-4C17-818B6F4F7118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C7036F0-F7CC-10FE-4C17-818B6F4F7118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C7036F0-F7CC-10FE-4C17-818B6F4F7118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C3693ED-E82F-3BBD-6E5B-06C01270313A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C3693ED-E82F-3BBD-6E5B-06C01270313A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C3693ED-E82F-3BBD-6E5B-06C01270313A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C3693ED-E82F-3BBD-6E5B-06C01270313A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

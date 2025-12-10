@@ -9,9 +9,11 @@ using Ereoz.MVVM;
 using Ereoz.WindowManagement;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 
 namespace Ereoz.Toolkit
@@ -22,6 +24,9 @@ namespace Ereoz.Toolkit
         private bool _isAutoRegisterContracts;
         private bool _isAutoRegisterViewWithViewModels;
         private Window _startWindow;
+        private string _updateFolder;
+        private string _appName;
+        private Assembly _callingAssembly;
 
         internal static string FileName { get; private set; }
         internal static string ProductName { get; private set; }
@@ -30,9 +35,10 @@ namespace Ereoz.Toolkit
 
         public AppBuilder(string updateFolder, string dataFolder)
         {
+            _updateFolder = updateFolder;
             DataFolder = dataFolder;
 
-            if (string.IsNullOrWhiteSpace(updateFolder))
+            if (string.IsNullOrWhiteSpace(_updateFolder))
                 throw new ArgumentException("updateFolder must not be null");
 
             if (string.IsNullOrWhiteSpace(DataFolder))
@@ -41,20 +47,21 @@ namespace Ereoz.Toolkit
             if (!Directory.Exists(DataFolder))
                 Directory.CreateDirectory(DataFolder);
 
-            var callingAssembly = Assembly.GetCallingAssembly();
-            Version = callingAssembly.GetName().Version;
-            FileName = Path.GetFileNameWithoutExtension(callingAssembly.Location);
-            ProductName = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(callingAssembly, typeof(AssemblyProductAttribute), false)).Product;
+            _callingAssembly = Assembly.GetCallingAssembly();
+            Version = _callingAssembly.GetName().Version;
+            FileName = Path.GetFileNameWithoutExtension(_callingAssembly.Location);
+            ProductName = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(_callingAssembly, typeof(AssemblyProductAttribute), false)).Product;
+            _appName = _callingAssembly.GetName().Name;
 
             ServiceContainer = new ServiceContainer();
             _navigationManager = new NavigationManager(ServiceContainer);
 
             ServiceContainer.Register<IServiceContainer, ServiceContainer>().AsSingletone(ServiceContainer);
             ServiceContainer.Register<INavigationManager, NavigationManager>().AsSingletone(_navigationManager);
-            ServiceContainer.Register<IMessenger,Messenger>().AsSingletone(new Messenger());
+            ServiceContainer.Register<IMessenger, Messenger>().AsSingletone(new Messenger());
             ServiceContainer.Register<ILogger, Logger>();
 
-            ServiceContainer.Resolve<Updater>().CheckAndUpdate(updateFolder, dataFolder, callingAssembly);
+            ServiceContainer.Resolve<Updater>().CheckAndUpdate(updateFolder, dataFolder, _callingAssembly);
 
             _isAutoRegisterContracts = true;
             _isAutoRegisterViewWithViewModels = true;
@@ -74,6 +81,68 @@ namespace Ereoz.Toolkit
             configure(_navigationManager);
             _isAutoRegisterViewWithViewModels = false;
             return this;
+        }
+
+        public void UseLocalDeploy(string installDirectoryBase, bool disableChangeBaseDirectory = false, string installerName = null)
+        {
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("VisualStudioEdition")))
+            {
+                var dir = AppDomain.CurrentDomain.BaseDirectory;
+
+                while (_appName != Path.GetFileName(dir.TrimEnd('\\').TrimEnd('/')))
+                    dir = Path.GetDirectoryName(dir.TrimEnd('\\').TrimEnd('/'));
+
+                dir = Path.GetDirectoryName(dir.TrimEnd('\\').TrimEnd('/'));
+
+                if (string.IsNullOrWhiteSpace(dir))
+                    return;
+
+                var assembly = Assembly.GetExecutingAssembly();
+                var installerFileName = "Ereoz.InstallerCreator.exe";
+                var resourceInstallerName = assembly.GetManifestResourceNames().Where(it => it.EndsWith(installerFileName)).FirstOrDefault();
+
+                using (Stream stream = assembly.GetManifestResourceStream(resourceInstallerName))
+                {
+                    if (stream != null)
+                    {
+                        try
+                        {
+                            using (FileStream fileStream = new FileStream(Path.Combine(dir, installerFileName), FileMode.Create))
+                            {
+                                stream.CopyTo(fileStream);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+
+                if (!File.Exists(Path.Combine(dir, "InstallerInfo.txt")))
+                {
+                    var installerInfo = new StringBuilder();
+
+                    if (!string.IsNullOrWhiteSpace(installerName))
+                        installerInfo.AppendLine($"InstallerName={installerName}");
+
+                    installerInfo.AppendLine($"AppName={_appName}");
+                    installerInfo.AppendLine($"InstallDirectoryBase={installDirectoryBase}");
+                    installerInfo.AppendLine($"ReleasesDirectoryBase={_updateFolder}");
+                    installerInfo.AppendLine($"DisableChangeBaseDirectory={disableChangeBaseDirectory}");
+
+                    var targetArchitecture = _callingAssembly
+                        .GetName()
+                        .ProcessorArchitecture
+                        .ToString()
+                        .Replace("X", "")
+                        .Replace("x", "")
+                        .Replace("Amd", "")
+                        .Replace("MSIL", "");
+
+                    if (!string.IsNullOrWhiteSpace(targetArchitecture))
+                        installerInfo.AppendLine($"RID=win-x{targetArchitecture}");
+
+                    File.WriteAllText(Path.Combine(dir, "InstallerInfo.txt"), installerInfo.ToString());
+                }
+            }
         }
 
         public void ShowStartWindow<TWindow, TViewModel>()
@@ -132,7 +201,7 @@ namespace Ereoz.Toolkit
                     Application.Current.MainWindow = window;
                 };
             }
-            
+
             return window;
         }
     }

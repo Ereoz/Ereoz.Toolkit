@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net40</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ApplicationIcon>icons8_software_4.ico</ApplicationIcon>
+		<WindowIcon>icons8_software_4.ico</WindowIcon>
+		
+		<Version>0.1.4000.5</Version>
+		
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Resource Include="icons8_microsoft_admin_48px.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+</Project>

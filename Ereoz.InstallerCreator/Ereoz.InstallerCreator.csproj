@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net46</TargetFramework>
+
+		<Version>0.1.4000.5</Version>
+		
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<EmbeddedResource Include="InstallerBase\**\*.zip">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="InstallerBase\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.IO.Compression" />
+	</ItemGroup>
+
+	<Target Name="CopyFilesFromSourceProject" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
+		<PropertyGroup>
+			<_LocalAppData>$([System.Environment]::GetEnvironmentVariable('LOCALAPPDATA'))</_LocalAppData>
+		</PropertyGroup>
+		<MakeDir Directories="$(_LocalAppData)\EreozInstallerTemp" />
+		<RemoveDir Directories="$(ProjectDir)InstallerBase" ContinueOnError="true" />
+		<MakeDir Directories="$(ProjectDir)InstallerBase" />
+		<ItemGroup>
+			<FilesToZip Include="$(SolutionDir)Ereoz.InstallerBase\**\*.*" Exclude="$(SolutionDir)Ereoz.InstallerBase\bin\**\*.*;$(SolutionDir)Ereoz.InstallerBase\obj\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(FilesToZip)" DestinationFiles="@(FilesToZip->'$(_LocalAppData)\EreozInstallerTemp\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
+		<ZipDirectory SourceDirectory="$(_LocalAppData)\EreozInstallerTemp" DestinationFile="$(ProjectDir)InstallerBase\EreozInstaller.zip" />
+		<RemoveDir Directories="$(_LocalAppData)\EreozInstallerTemp" ContinueOnError="true" />
+	</Target>
+
+</Project>

@@ -1,0 +1,136 @@
+﻿<UserControl x:Class="Ereoz.InstallerBase.Dialogs.ConfigureDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Ereoz.InstallerBase.Dialogs"
+             mc:Ignorable="d"
+             d:DesignHeight="308"
+             d:DesignWidth="520">
+    <DockPanel>
+        <Border DockPanel.Dock="Top"
+                BorderThickness="0 0 0 1"
+                BorderBrush="#A0A0A0"
+                Height="52">
+            <DockPanel Background="#000116">
+                <StackPanel DockPanel.Dock="Right"
+                            VerticalAlignment="Center"
+                            Margin="0 0 16 0">
+                    <TextBlock Text="{Binding InstallerName}"
+                               HorizontalAlignment="Center"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Margin="0 0 0 -2">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush StartPoint="0,0.5"
+                                                 EndPoint="1,0.5">
+                                <GradientStop Color="#C3AFDB" />
+                                <GradientStop Color="#8B65E3"
+                                              Offset="1" />
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                    <TextBlock Text="Installer"
+                               FontSize="10"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush StartPoint="0,0.5"
+                                                 EndPoint="1,0.5">
+                                <GradientStop Color="#8B65E3" />
+                                <GradientStop Color="#C3AFDB"
+                                              Offset="1" />
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </StackPanel>
+                <TextBlock Text="{Binding ConfigureHeader}"
+                           FontWeight="SemiBold"
+                           Padding="16">
+                    <TextBlock.Background>
+                        <LinearGradientBrush StartPoint="0,0.5"
+                                             EndPoint="1,0.5">
+                            <GradientStop Color="#F0F0F0" />
+                            <GradientStop Color="#C3AFDB"
+                                          Offset="1" />
+                        </LinearGradientBrush>
+                    </TextBlock.Background>
+                </TextBlock>
+                <Border>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0.5"
+                                             EndPoint="1,0.5">
+                            <GradientStop Color="#C3AFDB" />
+                            <GradientStop Color="#000116"
+                                          Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <Border Background="WhiteSmoke">
+            <DockPanel>
+                <GroupBox DockPanel.Dock="Top"
+                          Header="Каталог установки"
+                          Margin="16">
+                    <DockPanel Margin="16">
+                        <Button DockPanel.Dock="Right"
+                                Content="Обзор..."
+                                Command="{Binding SelectInstallDirCommand}"
+                                Height="22"
+                                Width="76" />
+                        <TextBox Text="{Binding InstallParams.InstallDir}"
+                                 IsReadOnly="True"
+                                 VerticalContentAlignment="Center"
+                                 Margin="0 0 16 0"
+                                 Focusable="False" />
+                    </DockPanel>
+                </GroupBox>
+                <CheckBox DockPanel.Dock="Top"
+                          Content="Создать ярлык на рабочем столе"
+                          IsChecked="{Binding InstallParams.IsShortcutDesktop}"
+                          HorizontalAlignment="Left"
+                          Margin="16 0 16 16" />
+                <CheckBox DockPanel.Dock="Top"
+                          Content="Создать группу в меню 'Пуск'"
+                          IsChecked="{Binding InstallParams.IsShortcutStartMenu}"
+                          HorizontalAlignment="Left"
+                          Margin="16 0 16 16" />
+                <StackPanel DockPanel.Dock="Top"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="16 0 16 16">
+                    <RadioButton Content="Для текущего пользователя"
+                                 Margin="0 0 16 0"
+                                 IsChecked="True" />
+                    <RadioButton IsChecked="{Binding InstallParams.IsForAllUser}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Для всех пользователей" />
+                            <Image Source="/icons8_microsoft_admin_48px.png"
+                                   Height="16"
+                                   Margin="4 0 0 0"
+                                   Visibility="{Binding AdminIconVisibility}"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Bottom"
+                            Margin="16 0 16 16">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Требуется места: "
+                                   x:Name="requiredSpaceTextBlock" />
+                        <TextBlock Text="{Binding InstallParams.RequiredSpace}" />
+                        <TextBlock Text=" МБ" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Доступно места: "
+                                   Width="{Binding ElementName=requiredSpaceTextBlock, Path=ActualWidth}" />
+                        <TextBlock Text="{Binding AvailableSpace}" />
+                        <TextBlock Text=" МБ" />
+                    </StackPanel>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
+</UserControl>

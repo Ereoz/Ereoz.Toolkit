@@ -22,16 +22,31 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Ereoz.Abstractions"		Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.DataStorage"		Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.Serialization"		Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.DI"				Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.Logging"			Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.Packing"			Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.WindowManagement"	Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.UI"				Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.MVVM"				Version="0.*" PrivateAssets="none" />
-		<PackageReference Include="Ereoz.Messaging"			Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.Abstractions" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.DataStorage" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.Serialization" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.DI" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.Logging" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.Packing" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.WindowManagement" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.UI" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.MVVM" Version="0.*" PrivateAssets="none" />
+		<PackageReference Include="Ereoz.Messaging" Version="0.*" PrivateAssets="none" />
 	</ItemGroup>
-	
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\*.exe">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\" />
+	</ItemGroup>
+
+	<Target Name="CopyInstallerCreatorToResources" BeforeTargets="BeforeBuild" Condition="'$(TargetFramework)' == 'net40'">
+		<Message Text="Copy InstallerCreator.exe to Resources..." Importance="high" />
+		<Copy SourceFiles="..\Ereoz.InstallerCreator\bin\Release\net46\Ereoz.InstallerCreator.exe" DestinationFiles="Resources\Ereoz.InstallerCreator.exe" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
+	</Target>
+
 </Project>
