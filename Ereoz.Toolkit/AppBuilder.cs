@@ -9,7 +9,6 @@ using Ereoz.MVVM;
 using Ereoz.WindowManagement;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +23,6 @@ namespace Ereoz.Toolkit
         private bool _isAutoRegisterContracts;
         private bool _isAutoRegisterViewWithViewModels;
         private Window _startWindow;
-        private string _updateFolder;
         private string _appName;
         private Assembly _callingAssembly;
 
@@ -33,16 +31,14 @@ namespace Ereoz.Toolkit
         internal static Version Version { get; private set; }
         internal static string DataFolder { get; private set; }
 
-        public AppBuilder(string updateFolder, string dataFolder)
+        public AppBuilder() : this("..\\data") { }
+
+        public AppBuilder(string dataFolder)
         {
-            _updateFolder = updateFolder;
-            DataFolder = dataFolder;
-
-            if (string.IsNullOrWhiteSpace(_updateFolder))
-                throw new ArgumentException("updateFolder must not be null");
-
-            if (string.IsNullOrWhiteSpace(DataFolder))
+            if (string.IsNullOrWhiteSpace(dataFolder))
                 throw new ArgumentException("DataFolder must not be null");
+
+            DataFolder = dataFolder;            
 
             if (!Directory.Exists(DataFolder))
                 Directory.CreateDirectory(DataFolder);
@@ -60,8 +56,6 @@ namespace Ereoz.Toolkit
             ServiceContainer.Register<INavigationManager, NavigationManager>().AsSingletone(_navigationManager);
             ServiceContainer.Register<IMessenger, Messenger>().AsSingletone(new Messenger());
             ServiceContainer.Register<ILogger, Logger>();
-
-            ServiceContainer.Resolve<Updater>().CheckAndUpdate(updateFolder, dataFolder, _callingAssembly);
 
             _isAutoRegisterContracts = true;
             _isAutoRegisterViewWithViewModels = true;
@@ -83,7 +77,7 @@ namespace Ereoz.Toolkit
             return this;
         }
 
-        public void UseLocalDeploy(string installDirectoryBase, bool disableChangeBaseDirectory = false, string installerName = null)
+        public void UseLocalDeploy(DeployInfo deployInfo)
         {
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("VisualStudioEdition")))
             {
@@ -120,13 +114,13 @@ namespace Ereoz.Toolkit
                 {
                     var installerInfo = new StringBuilder();
 
-                    if (!string.IsNullOrWhiteSpace(installerName))
-                        installerInfo.AppendLine($"InstallerName={installerName}");
+                    if (!string.IsNullOrWhiteSpace(deployInfo.InstallerName))
+                        installerInfo.AppendLine($"InstallerName={deployInfo.InstallerName}");
 
                     installerInfo.AppendLine($"AppName={_appName}");
-                    installerInfo.AppendLine($"InstallDirectoryBase={installDirectoryBase}");
-                    installerInfo.AppendLine($"ReleasesDirectoryBase={_updateFolder}");
-                    installerInfo.AppendLine($"DisableChangeBaseDirectory={disableChangeBaseDirectory}");
+                    installerInfo.AppendLine($"InstallDirectoryBase={deployInfo.InstallDirectoryBase}");
+                    installerInfo.AppendLine($"ReleasesDirectoryBase={deployInfo.ReleasesDirectoryBase}");
+                    installerInfo.AppendLine($"DisableChangeBaseDirectory={deployInfo.DisableChangeBaseDirectory}");
 
                     var targetArchitecture = _callingAssembly
                         .GetName()
@@ -142,6 +136,10 @@ namespace Ereoz.Toolkit
 
                     File.WriteAllText(Path.Combine(dir, "InstallerInfo.txt"), installerInfo.ToString());
                 }
+            }
+            else
+            {
+                ServiceContainer.Resolve<Updater>().CheckAndUpdate(deployInfo.ReleasesDirectoryBase, DataFolder, _callingAssembly);
             }
         }
 
